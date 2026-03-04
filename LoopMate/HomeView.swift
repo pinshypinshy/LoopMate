@@ -14,6 +14,8 @@ struct HomeView: View {
         Room(id: "room_002", name: "テストルーム2", code: "G6LK9", memberCount: 2, progress: 52)
     ]
     
+    @State private var isFabMenuOpen = false
+    
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottomTrailing) {
@@ -29,11 +31,38 @@ struct HomeView: View {
                     .padding(.top)
                 }
                 
+                if isFabMenuOpen {
+                    RoomAddMenuView(
+                        onCreate: {
+                            isFabMenuOpen = false
+                            print("ルームを作る")
+                            // TODO: 画面遷移など
+                        },
+                        onJoin: {
+                            isFabMenuOpen = false
+                            print("ルームに入る")
+                            // TODO: 画面遷移など
+                        }
+                    )
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 20 + 80)
+                }
+                
                 FloatingPlusButton {
-                    
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) {
+                        isFabMenuOpen.toggle()
+                    }
                 }
                 .padding(.trailing, 20)
                 .padding(.bottom, 20)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if isFabMenuOpen {
+                    withAnimation(.easeOut(duration: 0.15)) {
+                        isFabMenuOpen = false
+                    }
+                }
             }
             .navigationTitle("ホーム")
             .navigationBarTitleDisplayMode(.inline)
