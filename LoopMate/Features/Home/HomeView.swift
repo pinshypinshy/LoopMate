@@ -10,8 +10,8 @@ import SwiftUI
 struct HomeView: View {
     
     let rooms: [Room] = [
-        Room(id: "room_001", name: "テストルーム1", code: "K53VM", memberCount: 3, progress: 76),
-        Room(id: "room_002", name: "テストルーム2", code: "G6LK9", memberCount: 2, progress: 52)
+        Room(id: "room_001", name: "TOEIC勉強", code: "K53VM", memberCount: 3, progress: 76),
+        Room(id: "room_002", name: "筋トレ", code: "G6LK9", memberCount: 2, progress: 52)
     ]
     
     @State private var isFabMenuOpen = false
