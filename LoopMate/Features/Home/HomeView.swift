@@ -24,7 +24,10 @@ struct HomeView: View {
                 ScrollView {
                     VStack(spacing: 18) {
                         ForEach(rooms) { room in
-                            RoomCellView(room: room)
+                            NavigationLink(destination: RoomView()) {
+                                RoomCellView(room: room)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal)
