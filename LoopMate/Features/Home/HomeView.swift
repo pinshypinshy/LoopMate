@@ -15,6 +15,7 @@ struct HomeView: View {
     ]
     
     @State private var isFabMenuOpen = false
+    @State private var isShowingCreateRoom = false
     
     var body: some View {
         NavigationStack {
@@ -38,8 +39,7 @@ struct HomeView: View {
                     RoomAddMenuView(
                         onCreate: {
                             isFabMenuOpen = false
-                            print("ルームを作る")
-                            // TODO: 画面遷移など
+                            isShowingCreateRoom = true
                         },
                         onJoin: {
                             isFabMenuOpen = false
@@ -77,6 +77,9 @@ struct HomeView: View {
                         Image(systemName: "bell")
                     }
                 }
+            }
+            .navigationDestination(isPresented: $isShowingCreateRoom) {
+                RoomCreateView()
             }
         }
     }

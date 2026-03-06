@@ -123,6 +123,7 @@ struct RoomView: View {
                                         Spacer()
                                         
                                         Image(systemName: "chevron.right")
+                                            .foregroundStyle(.gray)
                                     }
                                 }
                             }

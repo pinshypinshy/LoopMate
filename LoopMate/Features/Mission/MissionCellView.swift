@@ -22,6 +22,7 @@ struct MissionCellView: View {
             Spacer()
             
             Image(systemName: "chevron.right")
+                .foregroundStyle(.gray)
         }
         .padding(16)
         .background(
