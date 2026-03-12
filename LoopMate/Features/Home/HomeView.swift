@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+private enum AppRoute: Hashable {
+    case roomCreationFlow
+    case createdRoom
+}
+
 struct HomeView: View {
     
     let rooms: [Room] = [
@@ -15,10 +20,10 @@ struct HomeView: View {
     ]
     
     @State private var isFabMenuOpen = false
-    @State private var isShowingCreateRoom = false
+    @State private var path: [AppRoute] = []
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ZStack(alignment: .bottomTrailing) {
                 Color(.orange).opacity(0.1).ignoresSafeArea()
                 
@@ -39,7 +44,7 @@ struct HomeView: View {
                     RoomAddMenuView(
                         onCreate: {
                             isFabMenuOpen = false
-                            isShowingCreateRoom = true
+                            path.append(.roomCreationFlow)
                         },
                         onJoin: {
                             isFabMenuOpen = false
@@ -78,8 +83,23 @@ struct HomeView: View {
                     }
                 }
             }
-            .navigationDestination(isPresented: $isShowingCreateRoom) {
-                RoomCreateView()
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .roomCreationFlow:
+                    RoomCreationFlowHostView(
+                        onCreateCompleted: {
+                            path.append(.createdRoom)
+                        }
+                    )
+
+                case .createdRoom:
+                    RoomView(
+                        onBack: {
+                            path.removeAll()
+                        },
+                        shouldShowCompletionOnAppear: true
+                    )
+                }
             }
         }
     }

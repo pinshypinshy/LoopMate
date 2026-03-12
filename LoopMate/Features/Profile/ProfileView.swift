@@ -17,7 +17,7 @@ struct ProfileView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Image(systemName: "person.crop.circle")
-                                .font(.system(size: 108))
+                                .font(.system(size: 92))
                                 .foregroundStyle(.black.opacity(0.5))
                                 .background(
                                     Circle()
@@ -25,24 +25,26 @@ struct ProfileView: View {
                                 )
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(user.name)
-                                    .font(.title)
+                                    .font(.title2)
                                     .bold()
+                                    .padding(.top, 4)
                                 Text("@\(user.id)")
-                                    .font(.title3)
-                                //.bold()
+                                    .font(.headline)
                                 Button {
                                     
                                 } label: {
                                     HStack(spacing: 4) {
                                         Text("\(user.friends.count)")
-                                            .font(.headline)
+                                            .font(.footnote)
+                                            .bold()
                                         Text("フレンド")
+                                            .font(.footnote)
                                     }
                                     
                                     
                                 }
                                 .buttonStyle(.plain)
-                                .padding(.top, 6)
+                                .padding(.top, 12)
                             }
                             Spacer()
                             
@@ -53,8 +55,9 @@ struct ProfileView: View {
                             
                         } label: {
                             Text("プロフィールを編集")
+                                .font(.subheadline)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 8)
+                                .padding(.vertical, 6)
                                 .background(
                                     RoundedRectangle(cornerRadius: 10)
                                         .fill(Color.gray.opacity(0.2))

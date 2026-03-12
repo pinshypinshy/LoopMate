@@ -17,6 +17,7 @@ struct RoomAddMenuView: View {
                 Text("ルームを作る")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(.primary)
+                    .bold()
                     .padding(.vertical, 12)
                     .padding(.horizontal, 20)
             }
@@ -28,6 +29,7 @@ struct RoomAddMenuView: View {
                 Text("ルームに入る")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(.primary)
+                    .bold()
                     .padding(.vertical, 12)
                     .padding(.horizontal, 20)
             }
