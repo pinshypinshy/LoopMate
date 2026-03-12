@@ -10,9 +10,11 @@ import SwiftUI
 struct RoomCellView: View {
     
     let room: Room
+    @State var isMember: Bool = true
+    var join: (() -> Void)? = nil
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(spacing: 12) {
             Circle()
                 .fill(Color.gray.opacity(0.25))
                 .frame(width: 44, height: 44)
@@ -23,11 +25,13 @@ struct RoomCellView: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
                     
-                    Spacer()
-                    
-                    Text(room.code)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    if isMember {
+                        Spacer()
+                        
+                        Text(room.code)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 
                 HStack(spacing: 8) {
@@ -49,9 +53,29 @@ struct RoomCellView: View {
                         }
                     }
                 }
-                Text(room.progressText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                if isMember {
+                    Text(room.progressText)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            
+            if !isMember {
+                Spacer()
+                
+                Button {
+                    join?()
+                } label: {
+                    Text("参加")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(
+                            Capsule()
+                                .fill(Color.orange)
+                        )
+                }
             }
         }
         .padding(16)

@@ -10,6 +10,8 @@ import SwiftUI
 private enum AppRoute: Hashable {
     case roomCreationFlow
     case createdRoom
+    case roomEnter
+    case joinedRoom
 }
 
 struct HomeView: View {
@@ -49,7 +51,7 @@ struct HomeView: View {
                         onJoin: {
                             isFabMenuOpen = false
                             print("ルームに入る")
-                            // TODO: 画面遷移など
+                            path.append(.roomEnter)
                         }
                     )
                     .padding(.trailing, 20)
@@ -91,13 +93,28 @@ struct HomeView: View {
                             path.append(.createdRoom)
                         }
                     )
-
+                    
                 case .createdRoom:
                     RoomView(
                         onBack: {
                             path.removeAll()
                         },
                         shouldShowCompletionOnAppear: true
+                    )
+                    
+                case .roomEnter:
+                    RoomEnterView(
+                        onJoin: {
+                            
+                            path.append(.joinedRoom)
+                        }
+                    )
+                    
+                case .joinedRoom:
+                    RoomView(
+                        onBack: {
+                            path.removeAll()
+                        }
                     )
                 }
             }

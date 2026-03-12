@@ -149,8 +149,10 @@ struct RoomView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     if let onBack {
+                        print("use onBack")
                         onBack()
                     } else {
+                        print("use dismiss")
                         dismiss()
                     }
                 } label: {
@@ -223,5 +225,7 @@ struct RoomView: View {
 }
 
 #Preview {
-    RoomView(onBack: {})
+    NavigationStack {
+        RoomView(onBack: {})
+    }
 }

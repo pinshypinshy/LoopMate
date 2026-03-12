@@ -267,5 +267,7 @@ struct RoomCreateView: View {
 }
 
 #Preview {
-    RoomCreateView(onCreate: {})
+    NavigationStack {
+        RoomCreateView(onCreate: {})
+    }
 }
