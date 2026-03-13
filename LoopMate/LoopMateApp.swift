@@ -11,7 +11,7 @@ import SwiftUI
 struct LoopMateApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
     }
 }
