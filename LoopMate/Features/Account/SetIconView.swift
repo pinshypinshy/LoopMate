@@ -1,4 +1,6 @@
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
 struct SetIconView: View {
     
@@ -61,7 +63,6 @@ struct SetIconView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     registerAccount()
-                    onCompleted()
                 } label: {
                     Image(systemName: "checkmark")
                 }
@@ -73,9 +74,27 @@ struct SetIconView: View {
     }
     
     func registerAccount() {
-        print("username: \(username)")
-        print("displayName: \(displayName)")
-        print("icon: \(selectedIconName)")
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("uidが取得できなかった")
+            return
+        }
+        
+        let db = Firestore.firestore()
+        
+        let data: [String: Any] = [
+            "username": username,
+            "displayName": displayName,
+            "iconName": selectedIconName
+        ]
+        
+        db.collection("users").document(uid).setData(data) { error in
+            if let error = error {
+                print("保存失敗: \(error)")
+            } else {
+                print("保存成功")
+                onCompleted()
+            }
+        }
     }
 }
 

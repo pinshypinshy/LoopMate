@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCF-lCwUIqWy7vVXCkwKhW6r9H4oWdHVVU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>21876336166</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>app.hiraishi.pinshy.LoopMate</string>
+	<key>PROJECT_ID</key>
+	<string>loopmate-e04df</string>
+	<key>STORAGE_BUCKET</key>
+	<string>loopmate-e04df.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:21876336166:ios:38a5807081d59fb592e8e7</string>
+</dict>
+</plist>
