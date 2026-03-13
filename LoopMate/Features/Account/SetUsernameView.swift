@@ -11,23 +11,27 @@ struct SetUsernameView: View {
     let onCompleted: () -> Void
     
     var body: some View {
-        VStack(spacing: 40) {
-            Text("ユーザー名を設定してください。")
-                .font(.title2)
-                .bold()
+        ZStack {
+            Color.orange.opacity(0.1).ignoresSafeArea()
             
-            TextField("ユーザー名を入力", text: $username)
-                .focused($isFocused)
-                .onAppear {
-                    isFocused = true
-                }
-                .multilineTextAlignment(.center)
-                .font(.title)
-                .padding(.horizontal)
-            
-            Spacer()
+            VStack(spacing: 40) {
+                Text("ユーザー名を設定してください。")
+                    .font(.title2)
+                    .bold()
+                
+                TextField("ユーザー名を入力", text: $username)
+                    .focused($isFocused)
+                    .onAppear {
+                        isFocused = true
+                    }
+                    .multilineTextAlignment(.center)
+                    .font(.title)
+                    .padding(.horizontal)
+                
+                Spacer()
+            }
+            .padding(.top, 40)
         }
-        .padding(.top, 40)
         .navigationTitle("アカウント登録")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

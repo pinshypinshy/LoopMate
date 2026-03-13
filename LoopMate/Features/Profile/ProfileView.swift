@@ -6,8 +6,15 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
 struct ProfileView: View {
+    
+    @State private var username: String = ""
+    @State private var displayName: String = ""
+    @State private var iconName: String = "person.crop.circle.fill"
+    
     let user = User(id: "user_000", name: "テストユーザー")
     var body: some View {
         NavigationStack {
@@ -16,7 +23,7 @@ struct ProfileView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Image(systemName: "person.crop.circle")
+                            Image(systemName: iconName)
                                 .font(.system(size: 92))
                                 .foregroundStyle(.black.opacity(0.5))
                                 .background(
@@ -24,11 +31,11 @@ struct ProfileView: View {
                                         .fill(.gray.opacity(0.4))
                                 )
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(user.name)
+                                Text(displayName.isEmpty ? "表示名未設定" : displayName)
                                     .font(.title2)
                                     .bold()
                                     .padding(.top, 4)
-                                Text("@\(user.id)")
+                                Text(username.isEmpty ? "@unknown" : "@\(username)")
                                     .font(.headline)
                                 Button {
                                     
@@ -51,8 +58,12 @@ struct ProfileView: View {
                         }
                         .padding(.horizontal)
                         
-                        Button {
-                            
+                        NavigationLink {
+                            ProfileEditView(
+                                username: $username,
+                                displayName: $displayName,
+                                iconName: $iconName
+                            )
                         } label: {
                             Text("プロフィールを編集")
                                 .font(.subheadline)
@@ -81,9 +92,36 @@ struct ProfileView: View {
                 }
             }
         }
+        .onAppear {
+            fetchProfile()
+        }
+    }
+    
+    private func fetchProfile() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("uidが取得できなかった")
+            return
+        }
         
+        let db = Firestore.firestore()
         
-        
+        db.collection("users").document(uid).getDocument { snapshot, error in
+            if let error = error {
+                print("プロフィール取得失敗: \(error)")
+                return
+            }
+            
+            guard let data = snapshot?.data() else {
+                print("プロフィールデータが存在しない")
+                return
+            }
+            
+            username = data["username"] as? String ?? ""
+            displayName = data["displayName"] as? String ?? ""
+            iconName = data["iconName"] as? String ?? "person.crop.circle.fill"
+            
+            print("プロフィール取得成功")
+        }
     }
 }
 

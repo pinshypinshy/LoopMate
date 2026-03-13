@@ -1,14 +1,15 @@
-import SwiftUI
-import FirebaseAuth
-import FirebaseFirestore
+//
+//  EditIconView.swift
+//  LoopMate
+//
+//  Created by 平石悠生 on 2026/03/14.
+//
 
-struct SetIconView: View {
+import SwiftUI
+
+struct EditIconView: View {
     
-    @Binding var username: String
-    @Binding var displayName: String
-    @Binding var selectedIconName: String
-    
-    let onCompleted: () -> Void
+    @Binding var iconName: String
     
     let iconCandidates = [
         "person.crop.circle.fill",
@@ -24,11 +25,11 @@ struct SetIconView: View {
             Color.orange.opacity(0.1).ignoresSafeArea()
             
             VStack(spacing: 24) {
-                Text("アイコンを設定")
+                Text("アイコンを選択")
                     .font(.title2)
                     .bold()
                 
-                Image(systemName: selectedIconName)
+                Image(systemName: iconName)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 100, height: 100)
@@ -37,7 +38,7 @@ struct SetIconView: View {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 20) {
                     ForEach(iconCandidates, id: \.self) { icon in
                         Button {
-                            selectedIconName = icon
+                            iconName = icon
                         } label: {
                             Image(systemName: icon)
                                 .resizable()
@@ -46,7 +47,7 @@ struct SetIconView: View {
                                 .padding()
                                 .frame(maxWidth: .infinity)
                                 .background(
-                                    selectedIconName == icon
+                                    iconName == icon
                                     ? Color.orange.opacity(0.6)
                                     : Color.gray.opacity(0.1)
                                 )
@@ -61,54 +62,13 @@ struct SetIconView: View {
             }
             .padding(.top, 40)
         }
-        .navigationTitle("アカウント登録")
+        .navigationTitle("アイコンを編集")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    registerAccount()
-                } label: {
-                    Image(systemName: "checkmark")
-                }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.circle)
-                .tint(.orange)
-            }
-        }
-    }
-    
-    func registerAccount() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            print("uidが取得できなかった")
-            return
-        }
-        
-        let db = Firestore.firestore()
-        
-        let data: [String: Any] = [
-            "username": username,
-            "displayName": displayName,
-            "iconName": selectedIconName
-        ]
-        
-        db.collection("users").document(uid).setData(data) { error in
-            if let error = error {
-                print("保存失敗: \(error)")
-            } else {
-                print("保存成功")
-                onCompleted()
-            }
-        }
     }
 }
 
 #Preview {
     NavigationStack {
-        SetIconView(
-            username: .constant(""),
-            displayName: .constant(""),
-            selectedIconName: .constant("person.crop.circle.fill"),
-            onCompleted: {}
-        )
+        EditIconView(iconName: .constant("person.crop.circle.fill"))
     }
 }
