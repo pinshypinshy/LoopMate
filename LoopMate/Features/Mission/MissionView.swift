@@ -36,7 +36,10 @@ struct MissionView: View {
 
                         VStack(spacing: 18) {
                             ForEach(incompleteMissions) { mission in
-                                MissionCellView(mission: mission)
+                                NavigationLink(destination: MissionCompletionView()) {
+                                    MissionCellView(mission: mission)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                         
@@ -47,8 +50,11 @@ struct MissionView: View {
                         
                         VStack(spacing: 18) {
                             ForEach(completedMissions) { mission in
-                                MissionCellView(mission: mission)
-                                    .opacity(0.6)
+                                NavigationLink(destination: MissionCompletionView()) {
+                                    MissionCellView(mission: mission)
+                                        .opacity(0.6)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
