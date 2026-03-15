@@ -179,8 +179,64 @@ final class RoomService {
             }
         }
     }
+    
+    // 単一ルーム取得
+    func fetchRoom(roomId: String, completion: @escaping (Result<Room, Error>) -> Void) {
+        db.collection("rooms").document(roomId).getDocument { snapshot, error in
+            if let error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard
+                let snapshot,
+                let data = snapshot.data()
+            else {
+                completion(.failure(RoomServiceError.roomNotFound))
+                return
+            }
+            
+            guard
+                let name = data["name"] as? String,
+                let code = data["code"] as? String,
+                let memberCount = data["memberCount"] as? Int,
+                let ownerUid = data["ownerUid"] as? String,
+                let createdAt = data["createdAt"] as? Timestamp,
+                let updatedAt = data["updatedAt"] as? Timestamp,
+                let isNumberRequired = data["isNumberRequired"] as? Bool,
+                let isPhotoRequired = data["isPhotoRequired"] as? Bool,
+                let startDate = data["startDate"] as? Timestamp,
+                let selectedWeekdays = data["selectedWeekdays"] as? [Bool]
+            else {
+                completion(.failure(RoomServiceError.invalidRoomData))
+                return
+            }
+            
+            let endDate = data["endDate"] as? Timestamp
+            
+            let room = Room(
+                id: snapshot.documentID,
+                name: name,
+                code: code,
+                memberCount: memberCount,
+                ownerUid: ownerUid,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                isNumberRequired: isNumberRequired,
+                isPhotoRequired: isPhotoRequired,
+                startDate: startDate,
+                endDate: endDate,
+                selectedWeekdays: selectedWeekdays,
+                progress: 0
+            )
+            
+            completion(.success(room))
+        }
+    }
 }
 
 enum RoomServiceError: Error {
     case userNotSignedIn
+    case roomNotFound
+    case invalidRoomData
 }

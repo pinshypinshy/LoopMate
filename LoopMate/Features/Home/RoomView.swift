@@ -16,6 +16,12 @@ struct RoomView: View {
     var shouldShowCompletionOnAppear: Bool = false
     
     @State private var isShowingCompleteView = false
+    @State private var room: Room?
+    @State private var isLoading = false
+    @State private var errorMessage = ""
+    @State private var showErrorAlert = false
+    
+    private let roomService = RoomService()
     
     let statusByDay = makeStatusByDay()
     @State private var selectedDate: Date = .now
@@ -34,6 +40,27 @@ struct RoomView: View {
         ZStack {
             Color(.orange).opacity(0.1).ignoresSafeArea()
             VStack {
+                if isLoading {
+                    ProgressView("ルーム情報を読み込み中...")
+                        .padding(.top)
+                } else if let room {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(room.name)
+                            .font(.headline)
+                        
+                        Text("ルームコード: \(room.code)")
+                            .foregroundStyle(.secondary)
+                        
+                        Text("メンバー数: \(room.memberCount)")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal)
+                    .padding(.top)
+                }
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text(monthTitle(year: displayYear, month: displayMonth))
@@ -144,7 +171,7 @@ struct RoomView: View {
                 Spacer()
             }
         }
-        .navigationTitle("ルーム名")
+        .navigationTitle(room?.name ?? "ルーム")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -171,6 +198,8 @@ struct RoomView: View {
             }
         }
         .onAppear {
+            loadRoom()
+            
             if shouldShowCompletionOnAppear && !isShowingCompleteView {
                 isShowingCompleteView = true
             }
@@ -181,6 +210,11 @@ struct RoomView: View {
                     isShowingCompleteView = false
                 }
             )
+        }
+        .alert("ルーム情報の取得に失敗しました", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
         }
         
         
@@ -223,6 +257,25 @@ struct RoomView: View {
         
         let date = makeDate(year: year, month: month, day: 1)
         return formatter.string(from: date)
+    }
+    
+    private func loadRoom() {
+        isLoading = true
+        
+        roomService.fetchRoom(roomId: roomId) { result in
+            DispatchQueue.main.async {
+                isLoading = false
+                
+                switch result {
+                case .success(let fetchedRoom):
+                    room = fetchedRoom
+                    
+                case .failure(let error):
+                    errorMessage = error.localizedDescription
+                    showErrorAlert = true
+                }
+            }
+        }
     }
 }
 
