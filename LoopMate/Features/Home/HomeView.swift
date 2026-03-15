@@ -44,12 +44,13 @@ struct HomeView: View {
                         } else if rooms.isEmpty {
                             Text("参加中のルームはまだありません")
                                 .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
                                 .padding(.top, 40)
                         } else {
                             VStack(spacing: 18) {
                                 ForEach(rooms) { room in
                                     NavigationLink(destination: RoomView(roomId: room.id)) {
-                                        RoomCellView(room: room)
+                                        HomeRoomCellView(room: room)
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -124,8 +125,8 @@ struct HomeView: View {
                     
                 case .roomEnter:
                     RoomEnterView(
-                        onJoin: {
-                            path.append(.joinedRoom(roomId: "temp_joined_room_id"))
+                        onJoin: { roomId in
+                            path.append(.joinedRoom(roomId: roomId))
                         }
                     )
                     

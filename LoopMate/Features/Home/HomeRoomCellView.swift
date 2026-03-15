@@ -1,16 +1,14 @@
 //
-//  RoomCellView.swift
+//  HomeRoomCellView.swift
 //  LoopMate
 //
-//  Created by 平石悠生 on 2026/03/03.
+//  Created by 平石悠生 on 2026/03/15.
 //
 
 import SwiftUI
 
-struct RoomCellView: View {
-    
+struct HomeRoomCellView: View {
     let room: Room
-    @State var isMember: Bool = true
     var join: (() -> Void)? = nil
     
     var body: some View {
@@ -25,13 +23,11 @@ struct RoomCellView: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
                     
-                    if isMember {
-                        Spacer()
-                        
-                        Text(room.code)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
+                    Spacer()
+                    
+                    Text(room.code)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
                 
                 HStack(spacing: 8) {
@@ -53,29 +49,9 @@ struct RoomCellView: View {
                         }
                     }
                 }
-                if isMember {
-                    Text(room.progressText)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            
-            if !isMember {
-                Spacer()
-                
-                Button {
-                    join?()
-                } label: {
-                    Text("参加")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(
-                            Capsule()
-                                .fill(Color.orange)
-                        )
-                }
+                Text(room.progressText)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
         }
         .padding(16)
@@ -87,5 +63,5 @@ struct RoomCellView: View {
 }
 
 #Preview {
-    RoomCellView(room: Room.preview)
+    HomeRoomCellView(room: Room.preview)
 }

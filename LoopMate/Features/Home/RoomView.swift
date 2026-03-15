@@ -43,23 +43,6 @@ struct RoomView: View {
                 if isLoading {
                     ProgressView("ルーム情報を読み込み中...")
                         .padding(.top)
-                } else if let room {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(room.name)
-                            .font(.headline)
-                        
-                        Text("ルームコード: \(room.code)")
-                            .foregroundStyle(.secondary)
-                        
-                        Text("メンバー数: \(room.memberCount)")
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .padding(.horizontal)
-                    .padding(.top)
                 }
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -171,7 +154,7 @@ struct RoomView: View {
                 Spacer()
             }
         }
-        .navigationTitle(room?.name ?? "ルーム")
+        .navigationTitle(room?.name ?? "")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
