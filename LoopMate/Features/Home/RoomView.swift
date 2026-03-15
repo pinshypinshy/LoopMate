@@ -9,6 +9,8 @@ import SwiftUI
 
 struct RoomView: View {
     
+    let roomId: String
+    
     @Environment(\.dismiss) private var dismiss
     var onBack: (() -> Void)? = nil
     var shouldShowCompletionOnAppear: Bool = false
@@ -226,6 +228,6 @@ struct RoomView: View {
 
 #Preview {
     NavigationStack {
-        RoomView(onBack: {})
+        RoomView(roomId: "preview_room_id", onBack: {})
     }
 }

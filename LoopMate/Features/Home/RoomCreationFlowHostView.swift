@@ -12,12 +12,12 @@ private enum RoomCreationRoute: Hashable {
 }
 
 struct RoomCreationFlowHostView: View {
-    let onCreateCompleted: () -> Void
+    let onCreateCompleted: (String) -> Void
 
     var body: some View {
         RoomCreateView(
-            onCreate: {
-                onCreateCompleted()
+            onCreate: { roomId in
+                onCreateCompleted(roomId)
             }
         )
     }
@@ -25,6 +25,6 @@ struct RoomCreationFlowHostView: View {
 
 #Preview {
     NavigationStack {
-        RoomCreationFlowHostView(onCreateCompleted: {})
+        RoomCreationFlowHostView(onCreateCompleted: { _  in })
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RoomCreateView: View {
     
-    let onCreate: () -> Void
+    let onCreate: (String) -> Void
     @Environment(\.dismiss) private var dismiss
     
     @State private var roomName: String = ""
@@ -20,6 +20,12 @@ struct RoomCreateView: View {
     @State private var endDate: Date? = nil
     @State private var isShowingEndDatePicker = false
     @State private var selectedWeekdays: [Bool] = Array(repeating: false, count: 7)
+    
+    private let roomService = RoomService()
+
+    @State private var isSaving = false
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
     
     private let weekdaySymbols = ["日", "月", "火", "水", "木", "金", "土"]
     
@@ -232,18 +238,52 @@ struct RoomCreateView: View {
             
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
-                    onCreate()
+                    let trimmedRoomName = roomName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    guard !trimmedRoomName.isEmpty else { return }
+                    
+                    isSaving = true
+                    
+                    roomService.createRoom(
+                        name: trimmedRoomName,
+                        isNumberRequired: isNumberRequired,
+                        isPhotoRequired: isPhotoRequired,
+                        startDate: startDate,
+                        endDate: endDate,
+                        selectedWeekdays: selectedWeekdays
+                    ) { result in
+                        DispatchQueue.main.async {
+                            isSaving = false
+                            
+                            switch result {
+                            case .success(let roomId):
+                                onCreate(roomId)
+                                
+                            case .failure(let error):
+                                errorMessage = error.localizedDescription
+                                showErrorAlert = true
+                            }
+                        }
+                    }
                 } label: {
                     Text("作成")
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.orange)
+                .disabled(
+                    roomName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSaving
+                )
             }
         }
         .onChange(of: startDate) {
             if let currentEndDate = endDate, currentEndDate < startDate {
                 endDate = startDate
             }
+        }
+        .alert("ルーム作成に失敗しました", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
         }
         
     }
@@ -268,6 +308,6 @@ struct RoomCreateView: View {
 
 #Preview {
     NavigationStack {
-        RoomCreateView(onCreate: {})
+        RoomCreateView(onCreate: { _ in })
     }
 }

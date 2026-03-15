@@ -9,20 +9,26 @@ import SwiftUI
 
 private enum AppRoute: Hashable {
     case roomCreationFlow
-    case createdRoom
+    case createdRoom(roomId: String)
     case roomEnter
-    case joinedRoom
+    case joinedRoom(roomId: String)
 }
 
 struct HomeView: View {
     
-    let rooms: [Room] = [
-        Room(id: "room_001", name: "TOEIC勉強", code: "K53VM", memberCount: 3, progress: 76),
-        Room(id: "room_002", name: "筋トレ", code: "G6LK9", memberCount: 2, progress: 52)
-    ]
+//    let rooms: [Room] = [
+//        Room(id: "room_001", name: "TOEIC勉強", code: "K53VM", memberCount: 3, progress: 76),
+//        Room(id: "room_002", name: "筋トレ", code: "G6LK9", memberCount: 2, progress: 52)
+//    ]
     
+    @State private var rooms: [Room] = []
     @State private var isFabMenuOpen = false
     @State private var path: [AppRoute] = []
+    @State private var isLoadingRooms = false
+    @State private var errorMessage = ""
+    @State private var showErrorAlert = false
+    
+    private let roomService = RoomService()
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -30,16 +36,28 @@ struct HomeView: View {
                 Color(.orange).opacity(0.1).ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: 18) {
-                        ForEach(rooms) { room in
-                            NavigationLink(destination: RoomView()) {
-                                RoomCellView(room: room)
+                    ScrollView {
+                        if isLoadingRooms {
+                            ProgressView("読み込み中...")
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 40)
+                        } else if rooms.isEmpty {
+                            Text("参加中のルームはまだありません")
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 40)
+                        } else {
+                            VStack(spacing: 18) {
+                                ForEach(rooms) { room in
+                                    NavigationLink(destination: RoomView(roomId: room.id)) {
+                                        RoomCellView(room: room)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
                             }
-                            .buttonStyle(.plain)
+                            .padding(.horizontal)
+                            .padding(.top)
                         }
                     }
-                    .padding(.horizontal)
-                    .padding(.top)
                 }
                 
                 if isFabMenuOpen {
@@ -89,15 +107,17 @@ struct HomeView: View {
                 switch route {
                 case .roomCreationFlow:
                     RoomCreationFlowHostView(
-                        onCreateCompleted: {
-                            path.append(.createdRoom)
+                        onCreateCompleted: { roomId in
+                            path.append(.createdRoom(roomId: roomId))
                         }
                     )
                     
-                case .createdRoom:
+                case .createdRoom(let roomId):
                     RoomView(
+                        roomId: roomId,
                         onBack: {
                             path.removeAll()
+                            loadRooms()
                         },
                         shouldShowCompletionOnAppear: true
                     )
@@ -105,17 +125,45 @@ struct HomeView: View {
                 case .roomEnter:
                     RoomEnterView(
                         onJoin: {
-                            
-                            path.append(.joinedRoom)
+                            path.append(.joinedRoom(roomId: "temp_joined_room_id"))
                         }
                     )
                     
-                case .joinedRoom:
+                case .joinedRoom(let roomId):
                     RoomView(
+                        roomId: roomId,
                         onBack: {
                             path.removeAll()
+                            loadRooms()
                         }
                     )
+                }
+            }
+            .onAppear {
+                loadRooms()
+            }
+        }
+        .alert("ルーム一覧の取得に失敗しました", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+    
+    private func loadRooms() {
+        isLoadingRooms = true
+        
+        roomService.fetchMyRooms { result in
+            DispatchQueue.main.async {
+                isLoadingRooms = false
+                
+                switch result {
+                case .success(let fetchedRooms):
+                    rooms = fetchedRooms
+                    
+                case .failure(let error):
+                    errorMessage = error.localizedDescription
+                    showErrorAlert = true
                 }
             }
         }

@@ -6,12 +6,23 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 struct Room: Identifiable {
     let id: String
     let name: String
     let code: String
     let memberCount: Int
+    let ownerUid: String
+    let createdAt: Timestamp
+    let updatedAt: Timestamp
+    let isNumberRequired: Bool
+    let isPhotoRequired: Bool
+    let startDate: Timestamp
+    let endDate: Timestamp?
+    let selectedWeekdays: [Bool]
+    
+    // 今は Firestore に progress がないので、一覧表示用に仮で持たせる
     let progress: Int
 }
 
@@ -21,7 +32,15 @@ extension Room {
         name: "テストルーム",
         code: "ABC12",
         memberCount: 5,
-        progress: 99
+        ownerUid: "preview_uid",
+        createdAt: Timestamp(date: Date()),
+        updatedAt: Timestamp(date: Date()),
+        isNumberRequired: false,
+        isPhotoRequired: false,
+        startDate: Timestamp(date: Date()),
+        endDate: nil,
+        selectedWeekdays: [false, true, false, true, false, true, false],
+        progress: 0
     )
     
     var progressText: String {
