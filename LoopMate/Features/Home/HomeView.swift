@@ -9,9 +9,9 @@ import SwiftUI
 
 private enum AppRoute: Hashable {
     case roomCreationFlow
-    case createdRoom(roomId: String)
     case roomEnter
-    case joinedRoom(roomId: String)
+    case room(roomId: String)
+    case roomMenu(room: Room)
 }
 
 struct HomeView: View {
@@ -49,7 +49,9 @@ struct HomeView: View {
                         } else {
                             VStack(spacing: 18) {
                                 ForEach(rooms) { room in
-                                    NavigationLink(destination: RoomView(roomId: room.id)) {
+                                    Button {
+                                        path.append(.room(roomId: room.id))
+                                    } label: {
                                         HomeRoomCellView(room: room)
                                     }
                                     .buttonStyle(.plain)
@@ -109,31 +111,35 @@ struct HomeView: View {
                 case .roomCreationFlow:
                     RoomCreationFlowHostView(
                         onCreateCompleted: { roomId in
-                            path.append(.createdRoom(roomId: roomId))
+                            path.append(.room(roomId: roomId))
                         }
                     )
-                    
-                case .createdRoom(let roomId):
-                    RoomView(
-                        roomId: roomId,
-                        onBack: {
-                            path.removeAll()
-                            loadRooms()
-                        },
-                        shouldShowCompletionOnAppear: true
-                    )
-                    
+
                 case .roomEnter:
                     RoomEnterView(
                         onJoin: { roomId in
-                            path.append(.joinedRoom(roomId: roomId))
+                            path.append(.room(roomId: roomId))
                         }
                     )
-                    
-                case .joinedRoom(let roomId):
+
+                case .room(let roomId):
                     RoomView(
                         roomId: roomId,
                         onBack: {
+                            path.removeLast()
+                        },
+                        onLeaveRoom: {
+                            path.removeAll()
+                            loadRooms()
+                        },
+                        onOpenMenu: { room in
+                            path.append(.roomMenu(room: room))
+                        }
+                    )
+                case .roomMenu(let room):
+                    RoomMenuView(
+                        room: room,
+                        onLeaveCompleted: {
                             path.removeAll()
                             loadRooms()
                         }

@@ -9,7 +9,13 @@ import SwiftUI
 
 struct RoomMenuView: View {
     
+    let room: Room
+    var onLeaveCompleted: (() -> Void)? = nil
+    
+    @Environment(\.dismiss) private var dismiss
     @State private var isLeaveAlertPresented = false
+    
+    private let roomService = RoomService()
     
     var body: some View {
         ZStack {
@@ -34,7 +40,15 @@ struct RoomMenuView: View {
                     }
                     
                     Button("退会する", role: .destructive) {
-                        // ここに退会処理を書く
+                        roomService.leaveRoom(room: room) { result in
+                            switch result {
+                            case .success:
+                                dismiss()
+                                onLeaveCompleted?()
+                            case .failure(let error):
+                                print(error)
+                            }
+                        }
                     }
                 }
             }
@@ -46,6 +60,6 @@ struct RoomMenuView: View {
 
 #Preview {
     NavigationStack {
-        RoomMenuView()
+        RoomMenuView(room: .preview, onLeaveCompleted: {})
     }
 }

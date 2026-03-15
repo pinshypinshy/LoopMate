@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Room: Identifiable {
+struct Room: Identifiable, Hashable {
     let id: String
     let name: String
     let code: String

@@ -385,6 +385,88 @@ final class RoomService {
                 }
             }
     }
+    
+    func leaveRoom(room: Room, completion: @escaping (Result<Void, Error>) -> Void) {
+
+        guard let uid = Auth.auth().currentUser?.uid else {
+            completion(.failure(RoomServiceError.userNotSignedIn))
+            return
+        }
+
+        let roomRef = db.collection("rooms").document(room.id)
+        let memberRef = db.collection("roomMembers").document("\(room.id)_\(uid)")
+        let now = Timestamp(date: Date())
+
+        // オーナーの場合
+        if room.ownerUid == uid {
+
+            db.collection("roomMembers")
+                .whereField("roomId", isEqualTo: room.id)
+                .getDocuments { snapshot, error in
+
+                    if let error {
+                        completion(.failure(error))
+                        return
+                    }
+
+                    guard let documents = snapshot?.documents else {
+                        completion(.failure(RoomServiceError.roomNotFound))
+                        return
+                    }
+
+                    let batch = self.db.batch()
+
+                    for doc in documents {
+                        batch.deleteDocument(doc.reference)
+                    }
+
+                    batch.deleteDocument(roomRef)
+
+                    batch.commit { error in
+                        if let error {
+                            completion(.failure(error))
+                        } else {
+                            completion(.success(()))
+                        }
+                    }
+                }
+
+        } else {
+
+            // 通常メンバー
+            db.runTransaction { transaction, errorPointer in
+
+                let roomSnapshot: DocumentSnapshot
+
+                do {
+                    roomSnapshot = try transaction.getDocument(roomRef)
+                } catch let error as NSError {
+                    errorPointer?.pointee = error
+                    return nil
+                }
+
+                let currentMemberCount = roomSnapshot.data()?["memberCount"] as? Int ?? 1
+
+                transaction.deleteDocument(memberRef)
+
+                transaction.updateData([
+                    "memberCount": currentMemberCount - 1,
+                    "updatedAt": now
+                ], forDocument: roomRef)
+
+                return nil
+
+            } completion: { _, error in
+
+                if let error {
+                    completion(.failure(error))
+                } else {
+                    completion(.success(()))
+                }
+
+            }
+        }
+    }
 }
 
 enum RoomServiceError: LocalizedError, Equatable {

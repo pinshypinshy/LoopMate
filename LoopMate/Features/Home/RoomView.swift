@@ -13,6 +13,8 @@ struct RoomView: View {
     
     @Environment(\.dismiss) private var dismiss
     var onBack: (() -> Void)? = nil
+    var onLeaveRoom: (() -> Void)? = nil
+    var onOpenMenu: ((Room) -> Void)? = nil
     var shouldShowCompletionOnAppear: Bool = false
     
     @State private var isShowingCompleteView = false
@@ -173,10 +175,12 @@ struct RoomView: View {
             }
             
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button {
-                    
-                } label: {
-                    Image(systemName: "line.3.horizontal")
+                if let room {
+                    Button {
+                        onOpenMenu?(room)
+                    } label: {
+                        Image(systemName: "line.3.horizontal")
+                    }
                 }
             }
         }
